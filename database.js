@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require("mongodb");
 
 let client = null;
 let db = null;
@@ -6,16 +6,16 @@ let db = null;
 async function connectMongoClient() {
   try {
     if (isConnected()) {
-      console.log('Using existing MongoDB connection');
+      console.log("Using existing MongoDB connection");
       return client;
     }
 
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
-      throw new Error('MONGODB_URI environment variable is required');
+      throw new Error("MONGODB_URI environment variable is required");
     }
 
-    console.log('Connecting to MongoDB...');
+    console.log("Connecting to MongoDB...");
 
     client = new MongoClient(mongoUri, {
       maxPoolSize: 10,
@@ -24,18 +24,18 @@ async function connectMongoClient() {
     });
 
     await client.connect();
-    
+
     await client.db().admin().ping();
-    console.log('Successfully connected to MongoDB');
+    console.log("Successfully connected to MongoDB");
 
     return client;
   } catch (error) {
-    console.error('MongoDB connection error:', error.message);
+    console.error("MongoDB connection error:", error.message);
     throw error;
   }
 }
 
-async function getDatabase(dbName = 'problems-and-submissions') {
+async function getDatabase(dbName = "problems-and-submissions") {
   try {
     if (!db) {
       const client = await connectMongoClient();
@@ -43,17 +43,20 @@ async function getDatabase(dbName = 'problems-and-submissions') {
     }
     return db;
   } catch (error) {
-    console.error('Error getting database:', error.message);
+    console.error("Error getting database:", error.message);
     throw error;
   }
 }
 
-async function getCollection(collectionName, dbName = 'problems-and-submissions') {
+async function getCollection(
+  collectionName,
+  dbName = "problems-and-submissions"
+) {
   try {
     const database = await getDatabase(dbName);
     return database.collection(collectionName);
   } catch (error) {
-    console.error('Error getting collection:', error.message);
+    console.error("Error getting collection:", error.message);
     throw error;
   }
 }
@@ -64,10 +67,10 @@ async function closeConnection() {
       await client.close();
       client = null;
       db = null;
-      console.log('MongoDB connection closed');
+      console.log("MongoDB connection closed");
     }
   } catch (error) {
-    console.error('Error closing MongoDB connection:', error.message);
+    console.error("Error closing MongoDB connection:", error.message);
   }
 }
 
@@ -80,5 +83,5 @@ module.exports = {
   getDatabase,
   getCollection,
   closeConnection,
-  isConnected
+  isConnected,
 };
